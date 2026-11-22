@@ -47,13 +47,13 @@ export function parseRoni(text) {
     const key = `${season}-${year}`;
 
 
-
+    if (byKey.has(key)) duplicatesInFile++;
     // DJF -> janvier, JFM -> février, ..., NDJ -> décembre (mois central)
-    const centerMonth = `${year}-${String(idx + 1).padStart(2, '0')}-01`;
+    const centerMonth = idx + 1;
 
     byKey.set(key, { season, year, centerMonth, anom });
 
-    if (byKey.has(key)) duplicatesInFile++;
+
   }
 
   return { rows: [...byKey.values()], duplicatesInFile };

@@ -5,6 +5,9 @@
  *  - ligne absente        -> insérée
  *  - ligne présente, anom différente (NOAA a révisé la valeur) -> mise à jour
  *  - ligne présente, identique -> ignorée (aucune écriture)
+ *
+ * @param {import('pg').Pool} pool
+ * @param {Array<{season: string, year: number, centerMonth: number, anom: number}>} rows
  */
 export async function upsertRoni(pool, rows) {
   if (rows.length === 0) return { inserted: 0, updated: 0, unchanged: 0 };
@@ -15,7 +18,7 @@ export async function upsertRoni(pool, rows) {
 
     const { rows: result } = await client.query(
       `INSERT INTO roni (season, year, center_month, anom)
-       SELECT * FROM unnest($1::char(3)[], $2::smallint[], $3::date[], $4::numeric[])
+       SELECT * FROM unnest($1::char(3)[], $2::smallint[], $3::smallint[], $4::numeric[])
        ON CONFLICT (season, year) DO UPDATE
          SET anom = EXCLUDED.anom, updated_at = now()
          WHERE roni.anom IS DISTINCT FROM EXCLUDED.anom
