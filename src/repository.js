@@ -7,7 +7,7 @@
  *  - ligne présente, identique -> ignorée (aucune écriture)
  *
  * @param {import('pg').Pool} pool
- * @param {Array<{season: string, year: number, centerMonth: number, anom: number}>} rows
+ * @param {Array<{season: string, year: number, month: number, centerMonth: Date|string, anom: number}>} rows
  */
 export async function upsertRoni(pool, rows) {
   if (rows.length === 0) return { inserted: 0, updated: 0, unchanged: 0 };
@@ -17,8 +17,8 @@ export async function upsertRoni(pool, rows) {
     await client.query('BEGIN');
 
     const { rows: result } = await client.query(
-      `INSERT INTO roni (season, year, center_month, anom)
-       SELECT * FROM unnest($1::char(3)[], $2::smallint[], $3::smallint[], $4::numeric[])
+      `INSERT INTO roni (season, year, month, center_month, anom)
+       SELECT * FROM unnest($1::char(3)[], $2::smallint[], $3::smallint[], $4::date[], $5::numeric[])
        ON CONFLICT (season, year) DO UPDATE
          SET anom = EXCLUDED.anom, updated_at = now()
          WHERE roni.anom IS DISTINCT FROM EXCLUDED.anom
@@ -26,6 +26,7 @@ export async function upsertRoni(pool, rows) {
       [
         rows.map((r) => r.season),
         rows.map((r) => r.year),
+        rows.map((r) => r.month),
         rows.map((r) => r.centerMonth),
         rows.map((r) => r.anom),
       ],

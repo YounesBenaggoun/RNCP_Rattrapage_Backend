@@ -20,12 +20,13 @@ try {
     validateFileHeader(text);
     const { rows, duplicatesInFile } = parseRoni(text);
 
+    console.log(rows);
     validateRowCount(rows.length);
     console.log(`${rows.length} lignes lues (${duplicatesInFile} doublon(s) dans le fichier).`);
     const stats = await upsertRoni(pool, rows);
-    // console.log(
-    //     `Terminé : ${stats.inserted} insérées, ${stats.updated} mises à jour, ${stats.unchanged} inchangées.`,
-    // );
+    console.log(
+        `Terminé : ${stats.inserted} insérées, ${stats.updated} mises à jour, ${stats.unchanged} inchangées.`,
+    );
 } catch (err) {
     console.error('Import échoué :', err.message);
     process.exitCode = 1;

@@ -26,8 +26,8 @@ export default class PostgresOniRepository extends IOniObersrvation {
         }
 
         const tab = await this.pool.query(
-            `SELECT year, anomaly AS oni, season_index AS month
-             FROM public.oni_observations
+            `SELECT year, anom AS oni, center_date AS month
+             FROM public.roni
              WHERE center_date BETWEEN $1::date AND $2::date
              ORDER BY year ASC, season_index ASC`,
             [start, end]
@@ -38,9 +38,9 @@ export default class PostgresOniRepository extends IOniObersrvation {
 
     async getAll() {
         const tab = await this.pool.query(
-            `SELECT year , anomaly as oni , season_index as month
-     FROM public.oni_observations
-     ORDER BY year ASC, season_index ASC`
+            `SELECT year , anom as oni , center_month as month
+     FROM public.roni
+     ORDER BY year ASC, center_month ASC`
         );
         const result = tab.rows;
         return result;
