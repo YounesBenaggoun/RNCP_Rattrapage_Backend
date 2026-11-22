@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec \"clear && node\"   src/server.js ",
+    "start": "node src/server.js",
     "test": "npx vitest --reporter verbose",
     "prepare": "husky",
     "migrate": "node src/importData/migrate.js",
     "fetch": "node src/importData/fetchData.js",
-    "start": "npm run migrate && npm run fetch"
+    "init": "npm run migrate && npm run fetch"
   },
   "repository": {
     "type": "git",
