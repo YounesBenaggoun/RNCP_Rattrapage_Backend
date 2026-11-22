@@ -248,15 +248,27 @@ Toute route inconnue renvoie une erreur 404 au format :
 
 Les tests sont écrits avec **Vitest** et se trouvent dans le dossier `__tests__/`.
 
-```bash
-# Lancer tous les tests une fois
-npm test
 
-# Équivalent direct avec Vitest
+
+
+
+### Ajouter un test
+
+Crée un fichier `__tests__/NN_nom.test.js`, par exemple pour le parser :
+
+
+
+## Lancer les tests
+
+```bash
+# Tous les tests (mode watch)
+npx vitest
+
+# Une seule exécution, sans watch
 npx vitest run
 
-# Mode watch (relance à chaque modification)
-npx vitest
+# Un seul fichier
+npx vitest run health.test.js
 ```
 
 Le fichier `01_helloWorld.test.js` est un test de vérification qui confirme que Vitest est correctement installé et configuré :
@@ -271,26 +283,6 @@ describe("hello World - vitest is Working", () => {
 });
 ```
 
-### Ajouter un test
-
-Crée un fichier `__tests__/NN_nom.test.js`, par exemple pour le parser :
-
-# Tests de l'API ENSO / ONI
-
-Ce dossier contient les tests automatisés de l'API (Node.js / Express). Ils utilisent **Vitest** comme framework de test et **Supertest** pour appeler l'application Express sans lancer de serveur.
-
-## Lancer les tests
-
-```bash
-# Tous les tests (mode watch)
-npx vitest
-
-# Une seule exécution, sans watch
-npx vitest run
-
-# Un seul fichier
-npx vitest run health.test.js
-```
 
 > Adapte les commandes si tu as un script dédié dans `package.json` (par exemple `npm test`).
 
