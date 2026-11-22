@@ -2,7 +2,7 @@
 
 API Node.js / Express qui télécharge l'indice **RONI** (*Relative Oceanic Niño Index*) publié par la NOAA, le stocke dans une base **PostgreSQL** et l'expose via une API REST.
 
-Le projet suit une **Clean Architecture** (couches séparées : présentation, infrastructure, etc.).
+Le projet suit une **Clean Architecture** (couches séparées : domain, application,  présentation, infrastructure).
 
 ---
 
