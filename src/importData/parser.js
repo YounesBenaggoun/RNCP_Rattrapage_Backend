@@ -13,23 +13,28 @@ const LINE_RE = /^([A-Z]{3})\s+(\d{4})\s+(-?\d+(?:\.\d+)?)$/;
 export function parseRoni(text) {
   const byKey = new Map();
   let duplicatesInFile = 0;
+  
 
   const lines = text.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line || /^SEAS\b/i.test(line)) continue;
 
-    const m = LINE_RE.exec(line);
+
+    const m = line.split(/\s+/)
     if (!m) throw new Error(`Ligne ${i + 1} invalide : "${line}"`);
 
-    const season = m[1];
-    const year = Number(m[2]);
-    const anom = Number(m[3]);
+    const season = m[0];
+    const year = Number(m[1]);
+    const anom = Number(m[2]);
+
 
     const idx = SEASONS.indexOf(season);
     if (idx === -1) throw new Error(`Ligne ${i + 1} : saison inconnue "${season}"`);
 
+
     validateRow({ season, year, anom }, `ligne ${i + 1}`);
+  
 
     const key = `${season}-${year}`;
     if (byKey.has(key)) duplicatesInFile++;

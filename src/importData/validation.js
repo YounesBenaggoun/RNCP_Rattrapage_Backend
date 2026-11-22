@@ -16,6 +16,7 @@ export function validateRow({ season, year, anom }, context = '') {
   if (!Number.isFinite(anom) || Math.abs(anom) > MAX_ANOM) {
     throw new Error(`Anomalie hors limites ±${MAX_ANOM} : ${anom}${where}`);
   }
+  return true;
 }
 
 /** Vérifie la structure globale du fichier avant de l'importer. */

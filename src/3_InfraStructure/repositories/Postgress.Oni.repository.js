@@ -20,7 +20,6 @@ export default class PostgresOniRepository extends IOniObersrvation {
 
         const start = toDay(startDate, "startDate");
         const end = toDay(endDate, "endDate");
-        console.log(start);
         if (end < start) {
             throw new RangeError("endDate doit être postérieure ou égale à startDate");
         }
@@ -79,7 +78,6 @@ export default class PostgresOniRepository extends IOniObersrvation {
         const { rows } = await this.pool.query(
             `SELECT year, anom as anomaly, month FROM roni ORDER BY center_month DESC LIMIT 1`
         );
-        console.log(rows);
         return (rows[0]);
     }
 }

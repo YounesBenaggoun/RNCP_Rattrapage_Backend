@@ -275,18 +275,106 @@ describe("hello World - vitest is Working", () => {
 
 Crée un fichier `__tests__/NN_nom.test.js`, par exemple pour le parser :
 
-```js
-import { describe, it, expect } from "vitest";
-import { parseRoni } from "../src/scripts/parser.js";
+# Tests de l'API ENSO / ONI
 
-describe("parseRoni", () => {
-    it("parse une ligne valide", () => {
-        const text = "SEAS YR ANOM\nDJF 2020 0.50";
-        const { rows } = parseRoni(text);
-        expect(rows[0]).toMatchObject({ season: "DJF", year: 2020, month: 1, anom: 0.5 });
-    });
-});
+Ce dossier contient les tests automatisés de l'API (Node.js / Express). Ils utilisent **Vitest** comme framework de test et **Supertest** pour appeler l'application Express sans lancer de serveur.
+
+## Lancer les tests
+
+```bash
+# Tous les tests (mode watch)
+npx vitest
+
+# Une seule exécution, sans watch
+npx vitest run
+
+# Un seul fichier
+npx vitest run health.test.js
 ```
+
+> Adapte les commandes si tu as un script dédié dans `package.json` (par exemple `npm test`).
+
+## Prérequis
+
+- Dépendances installées : `npm install` (vitest et supertest en devDependencies).
+- Pour `findByRange.test.js` : la base PostgreSQL doit être démarrée et contenir les données ONI importées, car ces tests interrogent la vraie route `/oni/range`.
+- Les autres tests n'ont pas besoin de base de données.
+
+## Vue d'ensemble
+
+| Fichier | Type | Ce qui est testé |
+|---|---|---|
+| `01_helloWorld.test.js` | Sanity check | Vitest fonctionne correctement |
+| `404.test.js` | API | Route inconnue |
+| `health.test.js` | API | Route `/health` |
+| `findByRange.test.js` | API + BDD | Route `/oni/range` |
+| `DateParse.test.js` | Unitaire | Fonction `validateRow` |
+| `doublon.test.js` | Unitaire | `parseRoni` : doublons simples |
+| `multiple_doublon.test.js` | Unitaire | `parseRoni` : doublons multiples |
+
+## Détail des tests
+
+### `01_helloWorld.test.js`
+Vérifie que `1 + 1 = 2`. Sert uniquement à confirmer que Vitest est bien configuré.
+
+### `404.test.js`
+- `GET /path_not_configred` renvoie un statut **404**.
+
+### `health.test.js`
+- `GET /health` renvoie un statut **200** et un corps contenant `{ status: "ok" }`.
+
+### `findByRange.test.js`
+Teste `GET /oni/range?startDate=...&endDate=...`.
+
+| Cas | Résultat attendu |
+|---|---|
+| `1995-05-01` → `1995-10-01` | 200, **6** lignes (6 mois) |
+| `2000-01-01` → `2000-12-01` | 200, **12** lignes (12 mois) |
+| `startDate` après `endDate` | 500, message `endDate doit être postérieure ou égale à startDate` |
+| `startDate` manquant | 500 |
+| `endDate` manquant | 500 |
+| Format de date invalide (`2001-15-48`) | 500 |
+| `endDate` très lointaine (`3000-12-01`) | 200, plus d'une ligne (la plage est bornée par les données existantes) |
+
+### `DateParse.test.js`
+Teste `validateRow({ season, year, anom })` de `importData/validation.js`.
+
+| Cas | Résultat attendu |
+|---|---|
+| Ligne correcte (`DJF`, 1950, 0.5) | Valide (truthy) |
+| Saison inconnue (`DJ`) | Erreur `Saison inconnue` |
+| Année hors limites (`190`) | Erreur `Année hors limites 1950-2027` |
+| Anomalie hors limites (`10`) | Erreur `Anomalie hors limites` |
+
+### `doublon.test.js`
+Teste `parseRoni` de `importData/parser.js` sur 10 lignes dont `JFM 1950` répétée 6 fois.
+
+- `duplicatesInFile` = **5** (6 occurrences - 1).
+- `rows.length` = **5** (10 lignes - 5 doublons).
+
+### `multiple_doublon.test.js`
+Même principe avec plusieurs doublons dans un jeu de 25 lignes : `JFM 1950` ×6 et `MJJ 1950` ×4.
+
+- `duplicatesInFile` = **8** ((6 - 1) + (4 - 1)).
+- `rows.length` = **17** (25 lignes - 8 doublons).
+
+## Comportement du parser à garder en tête
+
+`parseRoni` ignore désormais les lignes invalides au lieu de s'arrêter à la première erreur. Elle retourne :
+
+```js
+{ rows, duplicatesInFile, errors }
+```
+
+où `errors` est une liste de `{ line, content, message }`. Les tests actuels ne couvrent pas encore ce comportement.
+
+## Tests à ajouter
+
+- `parseRoni` avec des lignes invalides mélangées à des lignes valides : les lignes valides sont conservées et `errors` contient les lignes fautives.
+- `parseRoni` avec une ligne incomplète ou non numérique (`DJF abc 1.2`).
+- `validateRow` avec des cas limites : années 1950 et 2027, anomalies aux bornes.
+- Nettoyage : `DateParse.test.js`, `doublon.test.js`, `multiple_doublon.test.js` et `findByRange.test.js` importent `supertest` et/ou `app` sans toujours les utiliser (les tests unitaires n'en ont pas besoin).
+
 
 ---
 
