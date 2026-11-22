@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon --exec \"clear && node\"   src/server.js ",
     "test": "npx vitest --reporter verbose",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrate": "node src/migrate.js",
+    "injest": "node src/injest.js"
   },
   "repository": {
     "type": "git",
