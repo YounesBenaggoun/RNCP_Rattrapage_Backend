@@ -26,10 +26,10 @@ export default class PostgresOniRepository extends IOniObersrvation {
         }
 
         const tab = await this.pool.query(
-            `SELECT year, anom AS oni, center_date AS month
+            `SELECT year, anom AS oni, month
              FROM public.roni
-             WHERE center_date BETWEEN $1::date AND $2::date
-             ORDER BY year ASC, season_index ASC`,
+             WHERE center_month BETWEEN $1::date AND $2::date
+             ORDER BY year ASC, month ASC`,
             [start, end]
         );
 
@@ -38,9 +38,9 @@ export default class PostgresOniRepository extends IOniObersrvation {
 
     async getAll() {
         const tab = await this.pool.query(
-            `SELECT year , anom as oni , center_month as month
+            `SELECT year , anom as oni , month
      FROM public.roni
-     ORDER BY year ASC, center_month ASC`
+     ORDER BY year ASC, month ASC`
         );
         const result = tab.rows;
         return result;
@@ -51,13 +51,12 @@ export default class PostgresOniRepository extends IOniObersrvation {
         const tab = await this.pool.query(
             `SELECT
                 year,
-                anomaly AS oni,
-                season_index AS month,
+                month,
             COUNT(*) AS occurrences
-            FROM public.oni_observations
-            GROUP BY year, anomaly, season_index
+            FROM public.roni
+            GROUP BY year, month
             HAVING COUNT(*) > 1
-            ORDER BY year ASC, season_index ASC`
+            ORDER BY year ASC, month ASC`
         );
         const result = tab.rows.length;
         return `There are ${result} duplicated Data`;
@@ -66,22 +65,22 @@ export default class PostgresOniRepository extends IOniObersrvation {
         const { rows } = await this.pool.query(`
       SELECT
         COUNT(*)::int                                                  AS total,
-        COUNT(*) FILTER (WHERE anomaly >= 0.5)::int                    AS el_nino,
-        COUNT(*) FILTER (WHERE anomaly <= -0.5)::int                   AS la_nina,
-        COUNT(*) FILTER (WHERE anomaly > -0.5 AND anomaly < 0.5)::int  AS neutral,
-        MIN(center_date)                                               AS first_date,
-        MAX(center_date)                                               AS last_date,
-        AVG(anomaly)::numeric(6,3)                                     AS avg_anomaly
-      FROM oni_observations
+        COUNT(*) FILTER (WHERE anom >= 0.5)::int                    AS el_nino,
+        COUNT(*) FILTER (WHERE anom <= -0.5)::int                   AS la_nina,
+        COUNT(*) FILTER (WHERE anom > -0.5 AND anom < 0.5)::int  AS neutral,
+        MIN(center_month)                                               AS first_date,
+        MAX(center_month)                                               AS last_date,
+        AVG(anom)::numeric(6,3)                                     AS avg_anomaly
+      FROM roni
     `);
         return rows[0];
     }
     async findLatest() {
         const { rows } = await this.pool.query(
-            `SELECT * FROM oni_observations ORDER BY center_date DESC LIMIT 1`
+            `SELECT year, anom as anomaly, month FROM roni ORDER BY center_month DESC LIMIT 1`
         );
         console.log(rows);
-        return this._mapRow(rows[0]);
+        return (rows[0]);
     }
     _mapRow(row) {
         if (!row) return null;
