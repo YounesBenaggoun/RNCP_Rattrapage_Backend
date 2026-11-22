@@ -8,7 +8,7 @@
     "test": "npx vitest --reporter verbose",
     "prepare": "husky",
     "migrate": "node src/migrate.js",
-    "injest": "node src/injest.js"
+    "fetch": "node src/fetchData.js"
   },
   "repository": {
     "type": "git",

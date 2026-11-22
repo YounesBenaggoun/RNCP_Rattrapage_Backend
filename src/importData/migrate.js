@@ -1,5 +1,5 @@
 
-import Pool from "./3_InfraStructure/database/database.js";
+import Pool from "../3_InfraStructure/database/database.js";
 import { readFile } from 'node:fs/promises';
 
 

@@ -1,4 +1,4 @@
-import { SEASONS } from './constants.js';
+import { SEASONS } from './importData/constants.js';
 
 export const MIN_YEAR = 1950;
 export const MAX_ANOM = 5; // °C, borne de sécurité (valeurs réelles ~ -2.0 à +2.5)

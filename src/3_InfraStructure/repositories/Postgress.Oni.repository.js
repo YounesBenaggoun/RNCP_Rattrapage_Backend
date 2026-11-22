@@ -82,18 +82,4 @@ export default class PostgresOniRepository extends IOniObersrvation {
         console.log(rows);
         return (rows[0]);
     }
-    _mapRow(row) {
-        if (!row) return null;
-        return new OniObservation({
-            year: row.year,
-            season: row.season,
-            anomaly: Number(row.anomaly),
-            source: row.source,
-            centerDate: row.center_date instanceof Date
-                ? row.center_date.toISOString().slice(0, 10)
-                : row.center_date,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-        });
-    }
 }

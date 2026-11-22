@@ -1,16 +1,16 @@
-
-import Pool from "./3_InfraStructure/database/database.js";
+import "dotenv/config";
+import Pool from "../3_InfraStructure/database/database.js";
 
 import { fetchRoniText } from './fetcher.js';
-import { validateFileHeader, validateRowCount } from './validation.js';
-import { parseRoni } from './parser.js';
+import { validateFileHeader, validateRowCount } from '../validation.js';
+import { parseRoni } from '../parser.js';
 import { upsertRoni } from './repository.js';
 
 
 
 const pool = Pool;
 
-const RoniURL = "https://www.cpc.ncep.noaa.gov/data/indices/RONI.ascii.txt";
+const RoniURL = process.env.RONI_URL;
 
 
 
@@ -19,8 +19,6 @@ try {
     const text = await fetchRoniText(RoniURL);
     validateFileHeader(text);
     const { rows, duplicatesInFile } = parseRoni(text);
-
-    console.log(rows);
     validateRowCount(rows.length);
     console.log(`${rows.length} lignes lues (${duplicatesInFile} doublon(s) dans le fichier).`);
     const stats = await upsertRoni(pool, rows);
