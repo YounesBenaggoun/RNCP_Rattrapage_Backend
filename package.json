@@ -7,8 +7,9 @@
     "dev": "nodemon --exec \"clear && node\"   src/server.js ",
     "test": "npx vitest --reporter verbose",
     "prepare": "husky",
-    "migrate": "node src/migrate.js",
-    "fetch": "node src/fetchData.js"
+    "migrate": "node src/importData/migrate.js",
+    "fetch": "node src/importData/fetchData.js",
+    "start": "npm run migrate && npm run fetch"
   },
   "repository": {
     "type": "git",
