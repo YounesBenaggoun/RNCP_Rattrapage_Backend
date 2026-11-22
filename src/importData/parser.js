@@ -1,4 +1,4 @@
-import { SEASONS } from './importData/constants.js';
+import { SEASONS } from './constants.js';
 import { validateRow } from './validation.js';
 
 

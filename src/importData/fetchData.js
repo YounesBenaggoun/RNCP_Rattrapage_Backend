@@ -2,8 +2,8 @@ import "dotenv/config";
 import Pool from "../3_InfraStructure/database/database.js";
 
 import { fetchRoniText } from './fetcher.js';
-import { validateFileHeader, validateRowCount } from '../validation.js';
-import { parseRoni } from '../parser.js';
+import { validateFileHeader, validateRowCount } from './validation.js';
+import { parseRoni } from './parser.js';
 import { upsertRoni } from './repository.js';
 
 
